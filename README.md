@@ -1,64 +1,94 @@
-Vercel Clone - Scalable Deployment System
-This project is a Vercel-inspired deployment system that automates fetching repositories, building projects inside Docker containers, and deploying them to an AWS-based infrastructure. It consists of multiple microservices, including an API server, a build server, and an S3 reverse proxy.
+# Vercel Clone
 
-Setup Guide
-Services Overview
-This project consists of the following services:
+This project is a **Vercel Clone** built using multiple microservices. It allows users to build, deploy, and serve static assets using AWS services like ECS, ECR, and S3. The project architecture consists of an **API Server**, **Build Server**, **Reverse Proxy**, and **Socket Server**.
 
-api-server: Handles deployment requests, fetches Git repositories, and triggers the build process.
-build-server: Clones the repository, builds the project, and uploads the output files to AWS S3.
-s3-reverse-proxy: Routes subdomains and domains to the correct S3 bucket static assets.
-socket.io-server: Manages real-time build progress updates.
-Local Setup (Without Docker Compose)
-1️⃣ Install Dependencies
-Navigate to each service folder and install dependencies:
+## Project Architecture
 
-sh
-Copy
-Edit
-cd api-server && npm install
-cd ../build-server && npm install
-cd ../s3-reverse-proxy && npm install
-2️⃣ Build and Run build-server (Docker)
-Since the build-server runs inside a Docker container, manually build and run it:
+![Project Architecture](https://i.imgur.com/r7QUXqZ.png)  
+*The architecture consists of multiple services communicating with each other to clone Vercel's functionality.*
 
-sh
-Copy
-Edit
-cd build-server
-docker build -t build-server .
-docker run -d --name build-server build-server
-3️⃣ Configure api-server
-Before running the api-server, make sure you set up the required AWS environment variables:
+## Services Overview
 
-sh
-Copy
-Edit
-export TASK_ARN=your-task-arn
-export CLUSTER_ARN=your-cluster-arn
-Then, start the server:
+- **api-server**: HTTP API server that handles REST API requests and manages tasks.
+- **build-server**: Docker service responsible for cloning Git repositories, building the project, and pushing the build to an S3 bucket.
+- **s3-reverse-proxy**: Acts as a reverse proxy for serving static files from the S3 bucket.
 
-sh
-Copy
-Edit
-cd api-server
-node index.js
-4️⃣ Start s3-reverse-proxy
-sh
-Copy
-Edit
-cd s3-reverse-proxy
-node index.js
-Services & Ports
-S.No	Service	Port
-1	api-server	9000
-2	socket.io-server	9002
-3	s3-reverse-proxy	8000
-Deploying to AWS
-Push the build-server image to AWS ECR:
-sh
-Copy
-Edit
-docker tag build-server <aws-account-id>.dkr.ecr.<region>.amazonaws.com/build-server
-docker push <aws-account-id>.dkr.ecr.<region>.amazonaws.com/build-server
-Deploy services using AWS ECS and S3.
+## Setup Guide
+
+### Prerequisites
+- Node.js installed on your local machine.
+- Docker installed and running.
+- AWS CLI configured with permissions for ECS, ECR, and S3.
+
+### Local Setup
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/yourusername/vercel-clone.git
+    cd vercel-clone
+    ```
+2. Run `npm install` in each of the services (`api-server`, `build-server`, and `s3-reverse-proxy`):
+    ```sh
+    cd api-server
+    npm install
+    cd ../build-server
+    npm install
+    cd ../s3-reverse-proxy
+    npm install
+    ```
+
+3. **Docker Build**: Build the `build-server` and push the image to AWS ECR.
+    ```sh
+    docker build -t build-server .
+    aws ecr get-login-password --region <your-region> | docker login --username AWS --password-stdin <your-ecr-url>
+    docker tag build-server:latest <your-ecr-url>/build-server:latest
+    docker push <your-ecr-url>/build-server:latest
+    ```
+
+4. **API Server Setup**: Configure the API server by providing the required configuration such as:
+   - `TASK ARN`
+   - `CLUSTER ARN`
+   - AWS S3 bucket details.
+
+5. Start the services:
+    - `api-server`:  
+      ```sh
+      cd api-server
+      node index.js
+      ```
+    - `s3-reverse-proxy`:  
+      ```sh
+      cd s3-reverse-proxy
+      node index.js
+      ```
+
+At this point, the following services will be running:
+
+| S.No | Service         | Port  |
+|------|-----------------|-------|
+| 1    | api-server      | :9000 |
+| 2    | socket.io-server| :9002 |
+| 3    | s3-reverse-proxy| :8000 |
+
+## AWS Setup
+
+- **AWS ECS**: Deploy and manage the Docker containers for `api-server`, `build-server`, and `s3-reverse-proxy`.
+- **AWS S3**: Store and serve static assets (e.g., `index.html`, `style.css`, etc.).
+- **AWS ECR**: Manage Docker images for the build server.
+
+## Project Structure
+```
+vercel-clone/
+│
+├── api-server/            # HTTP API Server for REST API requests
+├── build-server/          # Docker service to build and push to S3
+├── s3-reverse-proxy/      # Reverse Proxy for S3 static assets
+└── README.md              # Project documentation
+```
+
+## Future Enhancements
+- **Authentication and Authorization** for deployments.
+- **Custom Domain Mapping**.
+- **Improved Logging and Monitoring**.
+
+---
+

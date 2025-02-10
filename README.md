@@ -1,3 +1,6 @@
+Vercel Clone - Scalable Deployment System
+This project is a Vercel-inspired deployment system that automates fetching repositories, building projects inside Docker containers, and deploying them to an AWS-based infrastructure. It consists of multiple microservices, including an API server, a build server, and an S3 reverse proxy.
+
 Setup Guide
 Services Overview
 This project consists of the following services:

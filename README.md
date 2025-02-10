@@ -2,11 +2,6 @@
 
 This project is a **Vercel Clone** built using multiple microservices. It allows users to build, deploy, and serve static assets using AWS services like ECS, ECR, and S3. The project architecture consists of an **API Server**, **Build Server**, **Reverse Proxy**, and **Socket Server**.
 
-## Project Architecture
-
-![Project Architecture](https://i.imgur.com/r7QUXqZ.png)  
-*The architecture consists of multiple services communicating with each other to clone Vercel's functionality.*
-
 ## Services Overview
 
 - **api-server**: HTTP API server that handles REST API requests and manages tasks.
